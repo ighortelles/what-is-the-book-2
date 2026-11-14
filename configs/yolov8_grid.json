@@ -1,0 +1,28 @@
+{
+  "model": "yolov8n.pt",
+  "fixed": {
+    "epochs": 50,
+    "patience": 15,
+    "batch": 8,
+    "optimizer": "AdamW",
+    "weight_decay": 0.0005,
+    "seed": 42,
+    "deterministic": true,
+    "workers": 2,
+    "cache": false,
+    "amp": true,
+    "max_det": 1000,
+    "close_mosaic": 10,
+    "fliplr": 0.0,
+    "flipud": 0.0,
+    "degrees": 0.0,
+    "mixup": 0.0,
+    "save": true,
+    "plots": true
+  },
+  "grid": {
+    "imgsz": [640, 960],
+    "lr0": [0.001, 0.0003],
+    "mosaic": [0.0, 1.0]
+  }
+}
