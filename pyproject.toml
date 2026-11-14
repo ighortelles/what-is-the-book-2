@@ -1,0 +1,43 @@
+[project]
+name = "what-is-the-book-2"
+version = "0.1.0"
+description = "Detecção de lombadas de livros com redes neurais"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "numpy>=2.0",
+    "opencv-python>=4.10,<5",
+    "Pillow>=11",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.14", "pyright>=1.1"]
+
+[project.optional-dependencies]
+training = ["ultralytics>=8.3,<9", "torch==2.7.1", "torchvision==0.22.1"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = ["data", "tmp"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = ["E402"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pyright]
+include = ["src"]
+exclude = ["data", "tmp", ".venv", "**/__pycache__"]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"
+venvPath = "."
+venv = ".venv"
+reportMissingImports = "error"
+reportMissingTypeStubs = false
