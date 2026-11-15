@@ -1,0 +1,99 @@
+{
+  "model": "yolov8n.pt",
+  "fixed": {
+    "imgsz": 640,
+    "lr0": 0.001,
+    "epochs": 50,
+    "patience": 15,
+    "batch": 2,
+    "optimizer": "AdamW",
+    "weight_decay": 0.0005,
+    "seed": 42,
+    "deterministic": true,
+    "workers": 0,
+    "cache": false,
+    "amp": false,
+    "max_det": 1000,
+    "mosaic": 0.0,
+    "close_mosaic": 0,
+    "mixup": 0.0,
+    "cutmix": 0.0,
+    "copy_paste": 0.0,
+    "hsv_h": 0.0,
+    "hsv_s": 0.0,
+    "hsv_v": 0.0,
+    "bgr": 0.0,
+    "degrees": 0.0,
+    "translate": 0.0,
+    "scale": 0.0,
+    "shear": 0.0,
+    "perspective": 0.0,
+    "fliplr": 0.0,
+    "flipud": 0.0,
+    "multi_scale": 0.0,
+    "save": true,
+    "plots": true
+  },
+  "variants": [
+    {
+      "name": "original",
+      "operator": "original"
+    },
+    {
+      "name": "grayscale",
+      "operator": "grayscale"
+    },
+    {
+      "name": "gaussian_3",
+      "operator": "gaussian",
+      "ksize": 3,
+      "sigma": 0.8
+    },
+    {
+      "name": "gaussian_5",
+      "operator": "gaussian",
+      "ksize": 5,
+      "sigma": 1.2
+    },
+    {
+      "name": "median_3",
+      "operator": "median",
+      "ksize": 3
+    },
+    {
+      "name": "bilateral_5",
+      "operator": "bilateral",
+      "d": 5,
+      "sigma_color": 50,
+      "sigma_space": 50
+    },
+    {
+      "name": "canny_50_150",
+      "operator": "canny",
+      "low": 50,
+      "high": 150
+    },
+    {
+      "name": "canny_100_200",
+      "operator": "canny",
+      "low": 100,
+      "high": 200
+    },
+    {
+      "name": "sobel",
+      "operator": "sobel",
+      "ksize": 3
+    },
+    {
+      "name": "laplacian",
+      "operator": "laplacian",
+      "ksize": 3
+    },
+    {
+      "name": "rgb_sobel_025",
+      "operator": "rgb_sobel",
+      "ksize": 3,
+      "alpha": 0.25
+    }
+  ]
+}

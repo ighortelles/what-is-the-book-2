@@ -1,5 +1,10 @@
 # what-is-the-book-2
 
+Treinamento na GPU local: [instruções e perfil GTX 1060](docs/treinamento_local.md).
+
+Avaliação final no teste: [notebook](notebooks/yolov8_final_test_colab.ipynb)
+e [documentação](docs/avaliacao_final.md).
+
 Trabalho II de Visão Computacional: detecção de lombadas com caixas retangulares.
 
 ## Estrutura

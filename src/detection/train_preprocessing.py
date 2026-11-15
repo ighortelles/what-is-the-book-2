@@ -44,8 +44,9 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=ROOT / "runs/preprocessing")
     parser.add_argument("--keep-data", action="store_true")
     parser.add_argument("--device", default="0")
+    parser.add_argument("--config", type=Path, default=ROOT / "configs/yolov8_preprocessing.json")
     args = parser.parse_args()
-    cfg = json.loads((ROOT / "configs/yolov8_preprocessing.json").read_text())
+    cfg = json.loads(args.config.read_text(encoding="utf-8"))
     variants = cfg["variants"]
     if args.variant:
         variants = [v for v in variants if v["name"] == args.variant]
@@ -65,7 +66,7 @@ def main() -> None:
     torch = importlib.import_module("torch")
     ultra = importlib.import_module("ultralytics")
     if args.device != "cpu" and not torch.cuda.is_available():
-        raise RuntimeError("Enable a GPU in Colab")
+        raise RuntimeError("CUDA unavailable: check the GPU and the installed PyTorch build")
     entries, content_hash = dataset_identity(args.data)
     implementation = ROOT / "src/preprocess/image_variants.py"
     code_hash = hashlib.sha256(implementation.read_bytes()).hexdigest()
