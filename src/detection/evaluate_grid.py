@@ -67,15 +67,26 @@ def main() -> None:
         raise ValueError("Use a separate output directory outside the dataset")
     manifest_hash, test_hash, count = inspect_data(data)
     experiments = []
+    skipped = {}
     for number in range(1, 9):
         folder = grid / f"exp_{number:02d}"
         result_path, best = folder / "result.json", folder / "weights/best.pt"
         if not result_path.is_file() or not best.is_file():
-            raise FileNotFoundError(f"{folder.name}: finish training and validation first")
+            missing = [
+                str(path.relative_to(folder)) for path in (result_path, best) if not path.is_file()
+            ]
+            skipped[folder.name] = missing
+            print(f"STATUS | {folder.name}: incomplete; skipping (missing {missing})", flush=True)
+            continue
         result = json.loads(result_path.read_text(encoding="utf-8"))
         if result["dataset_sha256"] != manifest_hash:
             raise ValueError(f"{folder.name}: dataset differs from the training manifest")
         experiments.append((folder.name, result, best))
+    output.mkdir(parents=True, exist_ok=True)
+    save_json(output / "skipped_experiments.json", skipped)
+    if not experiments:
+        raise RuntimeError("No completed experiments available; nothing to evaluate")
+    print(f"STATUS | Evaluating {len(experiments)}/8 completed experiments", flush=True)
     selected = max(experiments, key=lambda e: e[1]["metrics"]["metrics/mAP50-95(B)"])[0]
     os.environ["MPLBACKEND"] = "Agg"
     ultra = importlib.import_module("ultralytics")
@@ -86,6 +97,7 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     plan = {
         "selected_by_validation": selected,
+        "skipped_experiments": skipped,
         "manifest_sha256": manifest_hash,
         "test_sha256": test_hash,
         "test_images": count,

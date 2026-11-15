@@ -39,6 +39,8 @@ class EvaluationTests(unittest.TestCase):
                     "metrics": {"metrics/mAP50-95(B)": 0.95 if number == 3 else 0.5},
                 }
                 (folder / "result.json").write_text(json.dumps(result))
+            (grid / "exp_07/result.json").unlink()
+            (grid / "exp_08/weights/best.pt").unlink()
             calls = []
 
             def validate(**kwargs):
@@ -57,13 +59,15 @@ class EvaluationTests(unittest.TestCase):
             ):
                 evaluator.main()
                 evaluator.main()
-            self.assertEqual(len(calls), 8)
+            self.assertEqual(len(calls), 6)
             self.assertTrue(all(call["split"] == "test" for call in calls))
             plan = json.loads((output / "evaluation_plan.json").read_text())
             self.assertEqual(plan["selected_by_validation"], "exp_03")
-            self.assertEqual(len(json.loads((output / "comparison.json").read_text())), 8)
-            (grid / "exp_08/result.json").unlink()
-            with patch("sys.argv", argv), self.assertRaises(FileNotFoundError):
+            self.assertEqual(len(json.loads((output / "comparison.json").read_text())), 6)
+            self.assertEqual(set(plan["skipped_experiments"]), {"exp_07", "exp_08"})
+            for checkpoint in grid.glob("*/weights/best.pt"):
+                checkpoint.unlink()
+            with patch("sys.argv", argv), self.assertRaisesRegex(RuntimeError, "No completed"):
                 evaluator.main()
             entries.append({"group": "one", "split": "train", "image": "train/images/x.jpg"})
             manifest.write_text(json.dumps(entries))

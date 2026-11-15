@@ -16,9 +16,12 @@ de GPU no Colab, use `DEVICE='0'`. Não é necessário baixar os resultados do D
 para o computador. O notebook incorpora o avaliador para funcionar com o ZIP já
 existente. Ele não modifica checkpoints nem inicia treinamentos.
 
-São necessários `result.json` e `weights/best.pt` de todos os oito experimentos.
-Se o experimento 8 ainda estiver pendente, finalize seu treinamento e validação
-no notebook original antes desta avaliação. A grade de preprocessamento local
+São avaliados os experimentos que possuem `result.json` e `weights/best.pt`.
+Experimentos incompletos são pulados, com os arquivos ausentes registrados no log
+e em `skipped_experiments.json`. É necessário pelo menos um experimento concluído.
+A seleção por validação considera somente os modelos disponíveis nesta execução.
+Para incluir experimentos finalizados posteriormente, escolha uma nova pasta
+`OUTPUT`, preservando o plano e os resultados anteriores. A grade de preprocessamento local
 e sua referência `original` são experimentos separados e não entram nesta tabela.
 
 O avaliador confere o hash do manifesto usado no treinamento, a separação dos
@@ -43,7 +46,8 @@ imagem e dependem do dispositivo; não são medidas de tempo total de aplicaçã
 
 Os arquivos ficam em `runs/final_test_original` no Drive:
 
-- `evaluation_plan.json`: seleção por validação, parâmetros e hashes.
+- `evaluation_plan.json`: seleção por validação, parâmetros, hashes e experimentos pulados.
+- `skipped_experiments.json`: experimentos incompletos e seus arquivos ausentes.
 - `comparison.csv` e `comparison.json`: métricas de validação e teste por experimento.
 - `exp_XX/test_metrics.json`: precisão, recall, mAP50, mAP50–95 e tempos.
 - `exp_XX/plots`: curvas, matriz de confusão e exemplos do validador.
@@ -57,6 +61,7 @@ O programa também está em `src/detection/evaluate_grid.py`, com opções
 `--data`, `--grid`, `--output`, `--device` e `--batch`.
 Os testes automatizados usam modelos simulados para verificar a escolha pela
 validação, o uso exclusivo de `split='test'`, a reutilização dos resultados e
-a rejeição de experimentos incompletos ou grupos compartilhados entre partições.
+o salto de experimentos incompletos, a rejeição de uma grade sem modelos concluídos
+e a rejeição de grupos compartilhados entre partições.
 Não foi executada avaliação real nesta alteração; os checkpoints originais
 permanecem no Drive, e o treinamento local continua independente.
