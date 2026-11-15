@@ -137,6 +137,17 @@ permitindo validar a grade sem instalar dependências pesadas no computador.
 
 ## Verificações executadas
 
+### Correção do backend de gráficos no Colab
+
+O teste no Colab reconheceu a Tesla T4, mas falhou antes de treinar porque o
+subprocesso herdou `MPLBACKEND=module://matplotlib_inline.backend_inline` do
+notebook. Esse backend não estava disponível no ambiente isolado. O script
+agora define `MPLBACKEND=Agg` antes de importar Ultralytics, permitindo salvar
+gráficos sem depender da interface do notebook. Na sessão já aberta, definir
+`os.environ["MPLBACKEND"] = "Agg"` antes de executar o subprocesso tem o mesmo
+efeito. Repetir o teste em uma pasta nova preserva os logs da tentativa anterior.
+O treinamento completo ainda depende da confirmação de uma nova execução no Colab.
+
 - Ruff: lint e formatação aprovados; Pyright: zero erros e avisos.
 - Planejamento da grade executado sem treinamento.
 - `src/preprocess/verify_dataset.py`: 2.499 imagens com SHA-256 idêntico ao

@@ -65,6 +65,28 @@ Colab com GPU e siga suas células. O ambiente de treinamento usa a dependência
 opcional `training`, instalada no Colab com `uv sync --locked --extra training`.
 Os treinamentos não foram executados nesta preparação.
 
+## Experimentos com filtros e bordas
+
+O notebook [yolov8_preprocessing_colab.ipynb](notebooks/yolov8_preprocessing_colab.ipynb)
+compara 11 variantes: RGB, cinza, Gaussianos 3×3/5×5, mediana, bilateral,
+Canny com dois pares de limiares, Sobel, Laplaciano e RGB com Sobel.
+Os hiperparâmetros são fixos e os aumentos aleatórios são desativados para
+isolar o efeito do processamento. Treino e validação recebem a mesma operação;
+o teste permanece reservado. Os originais e as anotações não são modificados.
+
+Envie o `data/colab_bundle.zip` atualizado. Os resultados ficam em
+`runs/preprocessing/`, separados da grade anterior, com retomada automática e
+logs resumidos. Imagens processadas são geradas no Colab, uma variante por vez;
+o cache é removido após salvar cada resultado. O protocolo está em
+[experimentos_preprocessamento.md](docs/experimentos_preprocessamento.md).
+
+Verificação local, sem treinamento ou download de pesos:
+
+```powershell
+uv run python -m unittest discover -s tests -p test_preprocessing.py
+uv run python -m src.detection.train_preprocessing --preview --output data/preprocessing_preview
+```
+
 ## Padronização do código
 
 As configurações ficam em `pyproject.toml` e as versões resolvidas em `uv.lock`.

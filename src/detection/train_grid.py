@@ -5,6 +5,7 @@ import hashlib
 import importlib
 import itertools
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -36,6 +37,9 @@ def main() -> None:
     if not args.run:
         print(json.dumps(plan, indent=2))
         return
+    # Colab's inline backend is inherited by subprocesses but is not installed
+    # in the isolated training environment. Save plots without an interactive UI.
+    os.environ["MPLBACKEND"] = "Agg"
     ultralytics = importlib.import_module("ultralytics")
     torch = importlib.import_module("torch")
     if args.device != "cpu" and not torch.cuda.is_available():

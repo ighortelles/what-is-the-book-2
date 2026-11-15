@@ -3,6 +3,22 @@
 Preparado em 14/11/2026, sem modificar `data/raw/` ou `data/zips/`.
 Saída: `data/unified/`. Classe única: `0 = book` (lombada).
 
+## Fontes dos datasets
+
+Os quatro datasets foram obtidos no Roboflow Universe, nas versões abaixo,
+com exportação YOLOv8. As licenças são as declaradas nos metadados dos exports.
+
+| Dataset | Versão | Licença | Link |
+|---|---:|---|---|
+| Book spine dataset-library | 3 | CC BY 4.0 | [Acessar dataset](https://universe.roboflow.com/cnu-hmlab-syko-and-ash/book-spine-dataset-library/dataset/3) |
+| Book spine instance segmentation | 1 | CC BY 4.0 | [Acessar dataset](https://universe.roboflow.com/harald-varner-xv5u7/book-spine-instance-segmentation/dataset/1) |
+| book | 1 | CC BY 4.0 | [Acessar dataset](https://universe.roboflow.com/hahaha-qjv2y/book-gjdsd/dataset/1) |
+| bookshelf-ai | 2 | CC BY 4.0 | [Acessar dataset](https://universe.roboflow.com/bookshelf-ai/bookshelf-ai-gopqn/dataset/2) |
+
+Os arquivos originais de metadados e atribuição estão preservados localmente em
+`data/unified/provenance/`. Como `data/` é ignorada pelo Git, esta seção mantém
+os links das fontes disponíveis na documentação versionada do projeto.
+
 ## Resultado inicial (antes da separação de validação)
 
 | Origem | Entrada | Treino | Teste | Removidas |
