@@ -1,5 +1,37 @@
 # Aplicação local de detecção
 
+## Linux Mint (apresentação)
+
+O repositório inclui os dois modelos da apresentação em `models/`: exp_05 e
+Bilateral. Execute em Linux Mint x86_64, dentro da pasta clonada ou copiada:
+
+```bash
+sudo apt update
+sudo apt install -y curl libgl1 libglib2.0-0
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="$HOME/.local/bin:$PATH"
+bash setup_app.sh
+bash start_app.sh
+```
+
+Abra **http://127.0.0.1:8765**. A instalação precisa de internet; depois de
+preparado o ambiente, a inferência utiliza os arquivos locais, sem Drive ou GPU.
+Teste uma foto antes da aula para verificar a instalação e o tempo na CPU do notebook.
+O Bilateral é aplicado automaticamente ao segundo modelo.
+
+O setup instala Python 3.13 e dependências em `.venv-app`, separado do ambiente
+de treinamento, e usa PyTorch para CPU. Não copie a `.venv` do Windows para Linux.
+São utilizadas as instruções oficiais de [instalação do uv](https://docs.astral.sh/uv/getting-started/installation/)
+e o [índice CPU do PyTorch](https://pytorch.org/get-started/previous-versions/).
+
+O inicializador encontra o repositório mesmo quando chamado de outro diretório
+e usa seus modelos por padrão, ignorando caminhos Windows em `settings.local.json`.
+Opções: `bash start_app.sh --port 9000` ou `--storage /caminho/dos/modelos`.
+Para um ambiente Python existente, defina `BOOK_APP_PYTHON=/caminho/bin/python`.
+Ctrl+C encerra o servidor. Não é necessário `chmod` quando se usa `bash`.
+
+## Windows
+
 Inicie na raiz do projeto:
 
 ```powershell
@@ -13,7 +45,7 @@ Ambos usam o mesmo limiar de confiança, preservando a resolução de treinament
 de cada modelo. Há contagens e downloads independentes. A contagem corresponde
 às detecções; não identifica títulos e pode haver falsos positivos ou livros omitidos.
 
-O script usa o ambiente já instalado em `.venv`, sem instalar
+O script PowerShell usa o ambiente já instalado em `.venv`, sem instalar
 dependências adicionais. Inferência em CPU, para preservar a GPU do treinamento.
 A aplicação pode consumir CPU e memória ao mesmo tempo que outros processos.
 Para mudar a porta ou o armazenamento, use `-Port` ou `-Storage`.
@@ -29,6 +61,8 @@ Coloque ambos em `models\exp_05\` e clique em
 **Atualizar modelos do ranking**. A seleção usa o maior mAP50–95 registrado em
 `runs/final_test_all/ranking.json`, entre os modelos disponíveis de cada grupo.
 O controle `original` da grade de preprocessamento pertence ao grupo sem filtros.
+Se não houver ranking em `runs`, o app consulta `models/ranking.json`, incluído
+com os dois checkpoints portáteis da apresentação.
 Na ausência de ranking, usa as métricas de validação e indica isso na interface.
 Se faltar um dos grupos, informa o erro e não executa uma comparação parcial.
 No ranking atual, os selecionados são exp_05 e bilateral_5.

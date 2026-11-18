@@ -1,0 +1,38 @@
+{
+  "id": 5,
+  "model": "yolov8n.pt",
+  "settings": {
+    "epochs": 50,
+    "patience": 15,
+    "batch": 8,
+    "optimizer": "AdamW",
+    "weight_decay": 0.0005,
+    "seed": 42,
+    "deterministic": true,
+    "workers": 2,
+    "cache": false,
+    "amp": true,
+    "max_det": 1000,
+    "close_mosaic": 10,
+    "fliplr": 0.0,
+    "flipud": 0.0,
+    "degrees": 0.0,
+    "mixup": 0.0,
+    "save": true,
+    "plots": true,
+    "imgsz": 960,
+    "lr0": 0.001,
+    "mosaic": 0.0
+  },
+  "dataset_sha256": "939e21afd1dde7d816a3a628e8e573ef9a3579b62f7187e55c4c0db7e8e471c0",
+  "ultralytics": "8.4.213",
+  "torch": "2.7.1+cu126",
+  "device": "0",
+  "metrics": {
+    "metrics/precision(B)": 0.9612206674576709,
+    "metrics/recall(B)": 0.930868876330571,
+    "metrics/mAP50(B)": 0.9647465013396203,
+    "metrics/mAP50-95(B)": 0.85211793073669,
+    "fitness": 0.85211793073669
+  }
+}

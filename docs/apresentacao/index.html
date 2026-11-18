@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Detecção de livros | Ighor Tatsch Telles</title>
+<style>
+:root{--paper:#f4f1e9;--ink:#172b32;--muted:#52656b;--accent:#087b70;--orange:#bd622e;--line:#cbd3cc}
+*{box-sizing:border-box}body{margin:0;background:#14262d;color:var(--ink);font-family:Arial,Helvetica,sans-serif}button,a{touch-action:manipulation}#viewport{height:calc(100dvh - 64px);display:grid;place-items:center;overflow:hidden}#deck{position:relative;width:1440px;height:810px;flex-shrink:0;transform-origin:center;box-shadow:0 12px 60px #0004}
+.slide{position:absolute;inset:0;background:var(--paper);padding:64px 78px 52px;overflow:hidden;display:flex;flex-direction:column}.slide[hidden]{display:none}.slide:before{content:"";position:absolute;left:0;top:0;width:9px;height:100%;background:var(--accent)}h1{font-size:80px;line-height:1.03;letter-spacing:-3px;margin:0 0 32px;max-width:950px}h2{font-size:54px;letter-spacing:-1.7px;line-height:1.08;margin:0 0 38px}h3{font-size:29px;margin:0 0 20px}p,li{font-size:28px;line-height:1.4;margin:0 0 20px}ul{padding-left:26px;margin:0}li{padding-left:8px;margin-bottom:19px}.small{font-size:22px}.muted{color:var(--muted)}.eyebrow{font-size:18px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:30px}.lead{font-size:36px;line-height:1.3;max-width:1120px}.cols{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}.cols.wide{grid-template-columns:1.15fr 1fr}.rule{border-top:2px solid var(--line);padding-top:26px}.note{margin-top:auto;padding-top:22px;font-size:19px;line-height:1.4;color:var(--muted)}.highlight{color:var(--accent)}.numbers{display:flex;gap:90px;margin:24px 0 48px}.numbers strong{display:block;font-size:78px;letter-spacing:-3px;color:var(--accent)}.numbers span{font-size:24px}.steps{display:flex;gap:28px;margin:35px 0}.steps>div{flex:1;border-top:4px solid var(--accent);padding-top:20px}.steps strong{font-size:48px;display:block;margin-bottom:14px}.steps p{font-size:24px}.callout{border-left:5px solid var(--accent);padding:10px 0 10px 24px;font-size:30px;line-height:1.35;margin-top:30px}table{border-collapse:collapse;width:100%;font-size:25px;line-height:1.3}th{text-align:left;font-size:20px;font-weight:normal;color:var(--muted);padding:0 16px 15px 0;border-bottom:2px solid var(--ink)}td{padding:17px 16px 17px 0;border-bottom:1px solid var(--line)}td.num,th.num{text-align:right}tr:last-child td{border-bottom:0}.compact td{padding:12px 16px 12px 0}.metric{font-size:94px;letter-spacing:-4px;color:var(--accent);font-weight:bold;line-height:1.1;margin:12px 0}.barrow{display:grid;grid-template-columns:255px 1fr 105px;gap:20px;align-items:center;margin:17px 0;font-size:25px}.track{height:27px;background:#dbe2da}.bar{height:100%;background:var(--accent)}.bar.orange{background:var(--orange)}.barrow b{text-align:right;font-size:27px}.bars .small{margin-bottom:28px}.tags{display:grid;grid-template-columns:1fr 1fr;gap:0 38px}.tags p{font-size:24px;border-bottom:1px solid var(--line);padding:15px 0;margin:0}.cover{background:var(--ink);color:var(--paper);justify-content:center}.cover .eyebrow{color:#72c8b4}.cover .muted{color:#b5c8ca}.cover .note{color:#b5c8ca;margin-top:52px}.cover h1{max-width:1000px}.source{font-size:17px;line-height:1.4;color:var(--muted)}a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}.divider{height:4px;background:var(--accent);width:100px;margin:20px 0 30px}svg{max-width:100%;height:auto}.controlbar{height:64px;display:flex;justify-content:space-between;align-items:center;padding:0 28px;color:#f4f1e9;gap:18px}.controls{display:flex;gap:8px;align-items:center}button{border:1px solid #678087;background:transparent;color:inherit;border-radius:5px;cursor:pointer;padding:9px 14px;font:inherit;font-size:15px}button:hover{background:#ffffff16}button:disabled{opacity:.3;cursor:default}button:focus-visible,a:focus-visible{outline:3px solid #efb866;outline-offset:4px}#progress{position:fixed;bottom:0;left:0;height:3px;background:#70cab7;transition:width .15s}#counter{font-variant-numeric:tabular-nums;font-size:16px}#help{font-size:14px;color:#b4c7c9}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#viewport{display:flex;align-items:center;justify-content:center}
+@media(max-width:650px){#help{display:none}.controlbar{padding:0 10px;gap:8px}button{padding:9px;font-size:13px}}
+@media print{@page{size:landscape;margin:0}body{background:white}#viewport{display:block;height:auto;overflow:visible}#deck{width:100%;height:auto;transform:none!important;box-shadow:none}.slide,.slide[hidden]{display:flex!important;position:relative;width:1440px;height:810px;zoom:.72;break-after:page;page-break-after:always}.slide:last-child{break-after:auto}.controlbar,#progress{display:none}}
+</style>
+</head>
+<body>
+<main id="viewport" aria-label="Apresentação sobre detecção de livros"><div id="deck">
+
+<section class="slide cover" aria-labelledby="s1">
+<div class="eyebrow">Visão Computacional · Trabalho 2</div>
+<h1 id="s1">Detecção de livros<br>pela lombada</h1>
+<p class="lead">Treinamento com YOLOv8n e comparação de filtros.</p>
+<div class="divider"></div>
+<p>Ighor Tatsch Telles</p>
+<p class="small muted">PUCRS<br>Ciência de Dados e Inteligência Artificial</p>
+<div class="note">Novembro de 2026</div>
+</section>
+
+<section class="slide" hidden aria-labelledby="s2">
+<h2 id="s2">O que queremos resolver</h2>
+<div class="cols"><div><p class="lead">Desenhar uma caixa em cada livro visível na foto.</p><ul><li>Localizar lombadas próximas e de tamanhos diferentes.</li><li>Lidar com inclinação, sombras e oclusões.</li><li>Verificar se filtros ajudam a detecção.</li></ul></div>
+<div><svg viewBox="0 0 530 390" role="img" aria-label="Ilustração de uma estante com caixas em volta de seis lombadas">
+<rect x="15" y="40" width="500" height="310" fill="#e1dfd3"/><path d="M15 348H515" stroke="#172b32" stroke-width="10"/>
+<g fill="#abbfb4"><rect x="42" y="91" width="61" height="250"/><rect x="118" y="72" width="55" height="269"/><rect x="188" y="105" width="77" height="236"/><rect x="280" y="65" width="42" height="276"/><rect x="337" y="94" width="62" height="247"/><rect x="414" y="80" width="59" height="261"/></g>
+<g stroke="#647f79" stroke-width="3"><path d="M56 124H89M56 134H89M131 101H160M202 138H251M292 100H310M351 123H385M428 116H459"/></g>
+<g fill="none" stroke="#087b70" stroke-width="4"><rect x="38" y="87" width="69" height="258"/><rect x="114" y="68" width="63" height="277"/><rect x="184" y="101" width="85" height="244"/><rect x="276" y="61" width="50" height="284"/><rect x="333" y="90" width="70" height="255"/><rect x="410" y="76" width="67" height="269"/></g></svg><p class="source">Ilustração do objetivo. Não representa uma previsão do modelo.</p></div></div>
+<p class="note">O projeto localiza livros. A leitura de títulos e autores está fora do escopo.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s3">
+<h2 id="s3">De onde vieram as imagens</h2>
+<div class="numbers"><div><strong>4</strong><span>fontes do Roboflow</span></div><div><strong>2.416</strong><span>imagens no conjunto final</span></div><div><strong>46.089</strong><span>caixas anotadas</span></div></div>
+<table class="compact"><thead><tr><th>Fonte</th><th class="num">Imagens após a revisão</th></tr></thead><tbody>
+<tr><td><a href="https://universe.roboflow.com/cnu-hmlab-syko-and-ash/book-spine-dataset-library/dataset/3" target="_blank" rel="noopener">Book spine dataset-library · versão 3</a></td><td class="num">863</td></tr>
+<tr><td><a href="https://universe.roboflow.com/harald-varner-xv5u7/book-spine-instance-segmentation/dataset/1" target="_blank" rel="noopener">Book spine instance segmentation · versão 1</a></td><td class="num">1.378</td></tr>
+<tr><td><a href="https://universe.roboflow.com/hahaha-qjv2y/book-gjdsd/dataset/1" target="_blank" rel="noopener">book · versão 1</a></td><td class="num">87</td></tr>
+<tr><td><a href="https://universe.roboflow.com/bookshelf-ai/bookshelf-ai-gopqn/dataset/2" target="_blank" rel="noopener">bookshelf-ai · versão 2</a></td><td class="num">88</td></tr></tbody></table>
+<p class="note">Uma classe: livro. As fontes já continham alguns redimensionamentos e aumentos de imagem.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s4">
+<h2 id="s4">Como os dados foram preparados</h2>
+<div class="cols"><div><div class="steps"><div><strong>2.548</strong><p>imagens recebidas</p></div><div><strong>49</strong><p>quase duplicatas removidas</p></div><div><strong>83</strong><p>descartes na revisão manual</p></div></div><p class="small">As anotações foram convertidas para caixas retangulares.</p><p class="small">Imagens semelhantes ficaram no mesmo grupo antes da divisão.</p></div>
+<div class="rule"><table><thead><tr><th>Uso</th><th class="num">Imagens</th><th class="num">Caixas</th></tr></thead><tbody><tr><td>Treino</td><td class="num">1.539</td><td class="num">28.588</td></tr><tr><td>Validação</td><td class="num">388</td><td class="num">7.296</td></tr><tr><td>Teste</td><td class="num">489</td><td class="num">10.205</td></tr></tbody></table><p class="callout">As três divisões contêm imagens das quatro fontes.</p></div></div>
+<p class="note">A revisão foi dirigida a problemas sinalizados. Nem todas as caixas foram revisadas manualmente.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s5">
+<h2 id="s5">Treinamento sem filtros</h2>
+<div class="cols"><div><p class="lead">Oito modelos YOLOv8n.</p><table><tbody><tr><td>Resolução</td><td>640 ou 960</td></tr><tr><td>Taxa de aprendizado</td><td>0,001 ou 0,0003</td></tr><tr><td>Mosaic</td><td>Ativado ou desativado</td></tr></tbody></table><p class="small muted" style="margin-top:18px">Mosaic combina imagens durante o treino.</p></div><div class="rule"><ul><li>Pesos iniciais já treinados em COCO.</li><li>Até 50 épocas, lotes de 8 imagens.</li><li>Execução no Google Colab com Tesla T4.</li></ul><p class="callout"><strong>exp_05</strong> foi o melhor dos oito e foi escolhido para a comparação.</p></div></div>
+<p class="note">exp_05: resolução 960, taxa 0,001 e Mosaic desativado. Escolha baseada na avaliação anterior.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s6">
+<h2 id="s6">Treinamento com filtros</h2>
+<p class="lead">Dez transformações e um controle RGB sem filtro adicional.</p>
+<div class="cols" style="margin-top:24px"><div class="tags"><p>Tons de cinza</p><p>Gaussian 3 e 5</p><p>Mediana 3</p><p>Bilateral</p><p>Canny 50/150 e 100/200</p><p>Sobel</p><p>Laplaciano</p><p>RGB com 25% de Sobel</p></div><div class="rule"><ul><li>Mesma configuração entre as 11 entradas.</li><li>Resolução 640 e lotes de 2 imagens.</li><li>Até 50 épocas, taxa de aprendizado 0,001.</li><li>Execução local na GTX 1060 de 3 GB.</li></ul></div></div>
+<p class="note">O mesmo filtro foi usado no treino, na validação e no teste. Os aumentos aleatórios foram desativados.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s7">
+<h2 id="s7">Como os resultados foram medidos</h2>
+<div class="cols"><div><h3>Precisão</h3><p>Entre as caixas previstas, quantas correspondem a livros?</p><h3 style="margin-top:36px">Revocação</h3><p>Entre os livros anotados, quantos foram encontrados?</p></div><div class="rule"><h3>mAP50–95</h3><p>Resume a qualidade das detecções, considerando diferentes exigências de ajuste das caixas.</p><p class="callout">Quanto maior, melhor.<br>Não é uma porcentagem simples de imagens corretas.</p></div></div>
+<p class="note">Teste final: 489 imagens. Os resultados do YOLO usam o avaliador Ultralytics.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s8">
+<h2 id="s8">Resultados principais</h2>
+<div class="bars"><p class="small muted">mAP50–95 no teste (%) · escala de 0 a 100</p>
+<div class="barrow"><span>exp_05, sem filtro</span><div class="track"><div class="bar" style="width:76.76%"></div></div><b>76,76</b></div>
+<div class="barrow"><span>Controle RGB</span><div class="track"><div class="bar" style="width:66.69%"></div></div><b>66,69</b></div>
+<div class="barrow"><span>Bilateral</span><div class="track"><div class="bar orange" style="width:65.70%"></div></div><b>65,70</b></div></div>
+<div class="cols rule" style="margin-top:42px"><div><h3>Melhor modelo apresentado</h3><p>exp_05: precisão de 91,29% e revocação de 87,75%.</p></div><div><h3>Melhor filtro no teste</h3><p>Bilateral ficou 0,99 ponto abaixo do controle RGB.</p></div></div>
+<p class="note">exp_05 usou outra resolução, lote e aumentos. Sua vantagem não pode ser atribuída apenas à ausência de filtro.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s9">
+<h2 id="s9">Os filtros melhoraram a detecção?</h2>
+<div class="cols wide"><table class="compact"><thead><tr><th>Entrada</th><th class="num">mAP50–95 (%)</th></tr></thead><tbody>
+<tr><td><strong>RGB sem filtro</strong></td><td class="num"><strong>66,69</strong></td></tr><tr><td>Bilateral</td><td class="num">65,70</td></tr><tr><td>Gaussian 3 / Gaussian 5</td><td class="num">65,61 / 65,59</td></tr><tr><td>RGB + Sobel / Sobel</td><td class="num">64,72 / 64,65</td></tr><tr><td>Tons de cinza</td><td class="num">64,36</td></tr><tr><td>Mediana / Laplaciano</td><td class="num">62,97 / 61,34</td></tr><tr><td>Canny 50/150 / 100/200</td><td class="num">57,43 / 54,07</td></tr></tbody></table>
+<div class="rule"><p class="lead">Nenhum filtro superou o controle RGB.</p><p>Os mapas de borda podem perder informações de cor e textura.</p><p class="small muted">Essa é uma possível explicação, não uma causa comprovada pelo experimento.</p></div></div>
+<p class="note">Comparação sob a mesma configuração. Uma execução por condição, sem estimativa de variação entre sementes.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s10">
+<h2 id="s10">O que mudou desde o trabalho 1</h2>
+<table><thead><tr><th>Aspecto</th><th>Trabalho 1</th><th>Trabalho 2</th></tr></thead><tbody><tr><td>Proposta</td><td>Localizar livros</td><td>Localizar lombadas</td></tr><tr><td>Informação visual</td><td>Descritor HOG fixo</td><td>Características aprendidas</td></tr><tr><td>Modelos</td><td>Regressão logística e MLP</td><td>YOLOv8n</td></tr><tr><td>Localização</td><td>Busca por janelas</td><td>Previsão das caixas pela rede</td></tr><tr><td>Dados totais</td><td>223 imagens, 318 caixas</td><td>2.416 imagens, 46.089 caixas</td></tr></tbody></table>
+<p class="callout">O MLP do trabalho 1 já era uma rede neural, mas recebia descritores HOG em vez de aprender a representação dos pixels.</p>
+<p class="note">HOG resume direções de gradientes. No trabalho 1, os recortes passavam por cinza, realce de contraste e HOG.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s11">
+<h2 id="s11">Resultados do trabalho 1</h2>
+<table><thead><tr><th>Modelo</th><th class="num">Precisão (%)</th><th class="num">Revocação (%)</th><th class="num">F1 (%)</th></tr></thead><tbody><tr><td>Regressão, referência</td><td class="num">3,67</td><td class="num">51,35</td><td class="num">6,85</td></tr><tr><td><strong>Regressão, C = 0,01</strong></td><td class="num"><strong>4,00</strong></td><td class="num"><strong>51,35</strong></td><td class="num"><strong>7,42</strong></td></tr><tr><td>Regressão, fundos difíceis</td><td class="num">1,39</td><td class="num">59,46</td><td class="num">2,72</td></tr><tr><td>MLP</td><td class="num">3,65</td><td class="num">51,35</td><td class="num">6,82</td></tr></tbody></table>
+<div class="cols rule" style="margin-top:36px"><p>O excesso de caixas falsas reduziu a precisão.</p><p>Teste: 22 imagens e 37 livros anotados. Limiares escolhidos na validação.</p></div>
+<p class="note">F1 combina precisão e revocação. Fonte: test_evaluation_001.json, 06/10/2026.</p>
+</section>
+
+<section class="slide" hidden aria-labelledby="s12">
+<h2 id="s12">O que podemos concluir</h2>
+<div class="cols"><div><h3>Neste trabalho</h3><ul><li>exp_05 teve o melhor resultado apresentado.</li><li>Bilateral foi o melhor filtro no teste.</li><li>Com o mesmo treino, RGB superou os filtros.</li></ul></div><div class="rule"><h3>Na comparação entre trabalhos</h3><p>Os datasets e as avaliações são diferentes.</p><p>F1 do trabalho 1 não equivale a mAP do trabalho 2.</p><p class="callout">Para medir a diferença entre os métodos, ambos precisam ser avaliados na mesma base.</p></div></div>
+<p class="note">A mudança demonstrada é de abordagem. Os resultados atuais não isolam o efeito da arquitetura.<br><a href="http://127.0.0.1:8765" target="_blank" rel="noopener">Abrir demonstração local</a> · <a href="README.md">Fontes e instruções</a></p>
+</section>
+
+</div></main>
+<nav class="controlbar" aria-label="Controles da apresentação"><span id="counter" aria-live="polite"></span><span id="help">← → para navegar · F para tela cheia · Home / End</span><div class="controls"><button id="prev" aria-label="Slide anterior">← Anterior</button><button id="next" aria-label="Próximo slide">Próximo →</button><button id="fullscreen">Tela cheia</button></div></nav>
+<div id="progress" aria-hidden="true"></div><div id="announce" class="sr-only" aria-live="polite"></div>
+<script>
+(()=>{'use strict';const slides=[...document.querySelectorAll('.slide')],deck=document.querySelector('#deck'),viewport=document.querySelector('#viewport');let current=0;
+function resize(){deck.style.transform=`scale(${Math.min(viewport.clientWidth/1440,viewport.clientHeight/810)})`;}
+function show(index){current=Math.min(slides.length-1,Math.max(0,index));slides.forEach((slide,i)=>{slide.hidden=i!==current;});document.querySelector('#counter').textContent=`${current+1} / ${slides.length}`;document.querySelector('#prev').disabled=current===0;document.querySelector('#next').disabled=current===slides.length-1;document.querySelector('#progress').style.width=`${(current+1)/slides.length*100}%`;document.querySelector('#announce').textContent=slides[current].querySelector('h1,h2').textContent;history.replaceState(null,'',`#${current+1}`);}
+async function fullscreen(){try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{document.querySelector('#help').textContent='Use F11 para tela cheia no navegador.';}}
+document.querySelector('#prev').addEventListener('click',()=>show(current-1));document.querySelector('#next').addEventListener('click',()=>show(current+1));document.querySelector('#fullscreen').addEventListener('click',fullscreen);
+document.addEventListener('keydown',e=>{if(e.ctrlKey||e.altKey||e.metaKey||/INPUT|TEXTAREA|SELECT|BUTTON|A/.test(e.target.tagName))return;if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(current+1);}else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(current-1);}else if(e.key==='Home'){e.preventDefault();show(0);}else if(e.key==='End'){e.preventDefault();show(slides.length-1);}else if(e.key.toLowerCase()==='f')fullscreen();});
+window.addEventListener('resize',resize);window.addEventListener('hashchange',()=>show((parseInt(location.hash.slice(1),10)||1)-1));show((parseInt(location.hash.slice(1),10)||1)-1);resize();})();
+</script>
+</body></html>

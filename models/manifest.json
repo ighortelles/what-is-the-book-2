@@ -1,0 +1,13 @@
+{
+  "purpose": "Local presentation: exp_05 and Bilateral",
+  "files": {
+    "exp_05/best.pt": {
+      "sha256": "234680c0388ef1500a31ddda9cfdb37aa13bd51cfbed593bdcff7e1719679015",
+      "bytes": 6572330
+    },
+    "preproc__bilateral_5/best.pt": {
+      "sha256": "eccd54044b0acf7024a3c9553e32a29dfd4c164123e0eb29e01957470cd7da88",
+      "bytes": 6506602
+    }
+  }
+}

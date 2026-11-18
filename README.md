@@ -1,5 +1,12 @@
 # what-is-the-book-2
 
+Apresentação em slides: abra [docs/apresentacao/index.html](docs/apresentacao/index.html)
+no navegador. Funciona sem internet, com setas e tela cheia.
+
+Linux Mint: `bash setup_app.sh` e `bash start_app.sh` (CPU).
+Os dois modelos da apresentação estão em `models/`.
+Veja os [pré-requisitos e instruções](docs/aplicacao.md#linux-mint-apresentação).
+
 Caminhos locais e armazenamento externo: [configuração portátil](docs/caminhos.md).
 
 Aplicação para detectar livros em fotos: [como executar](docs/aplicacao.md).

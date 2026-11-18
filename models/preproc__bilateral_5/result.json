@@ -1,0 +1,60 @@
+{
+  "request": {
+    "variant": {
+      "name": "bilateral_5",
+      "operator": "bilateral",
+      "d": 5,
+      "sigma_color": 50,
+      "sigma_space": 50
+    },
+    "model": "yolov8n.pt",
+    "settings": {
+      "imgsz": 640,
+      "lr0": 0.001,
+      "epochs": 50,
+      "patience": 15,
+      "batch": 2,
+      "optimizer": "AdamW",
+      "weight_decay": 0.0005,
+      "seed": 42,
+      "deterministic": true,
+      "workers": 0,
+      "cache": false,
+      "amp": false,
+      "max_det": 1000,
+      "mosaic": 0.0,
+      "close_mosaic": 0,
+      "mixup": 0.0,
+      "cutmix": 0.0,
+      "copy_paste": 0.0,
+      "hsv_h": 0.0,
+      "hsv_s": 0.0,
+      "hsv_v": 0.0,
+      "bgr": 0.0,
+      "degrees": 0.0,
+      "translate": 0.0,
+      "scale": 0.0,
+      "shear": 0.0,
+      "perspective": 0.0,
+      "fliplr": 0.0,
+      "flipud": 0.0,
+      "multi_scale": 0.0,
+      "save": true,
+      "plots": true
+    },
+    "train_val_sha256": "f7be0099164a5e17c048633f1fabc7010ec308f858125337cc85a26de9134c4e",
+    "preprocessing_sha256": "0d3bdc3b947bde5c0763e7091501ad97c0c58d55f033eaa41f8f13c027609ef5",
+    "opencv": "4.14.0",
+    "numpy": "2.5.4",
+    "torch": "2.7.1+cu126",
+    "ultralytics": "8.4.213",
+    "schema": 1
+  },
+  "metrics": {
+    "metrics/precision(B)": 0.9516193987059431,
+    "metrics/recall(B)": 0.8917214912280702,
+    "metrics/mAP50(B)": 0.9429371372293636,
+    "metrics/mAP50-95(B)": 0.774856866659416,
+    "fitness": 0.774856866659416
+  }
+}

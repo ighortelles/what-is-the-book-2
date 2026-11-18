@@ -1,0 +1,8 @@
+# CPU-only presentation environment for Linux x86_64; separate from training.
+# Install the PyTorch CPU index packages first with setup_app.sh.
+torch==2.7.1+cpu
+torchvision==0.22.1+cpu
+ultralytics==8.4.213
+numpy>=2.0
+opencv-python>=4.10,<5
+Pillow>=11

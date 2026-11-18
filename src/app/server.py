@@ -41,7 +41,7 @@ def discover(storage: Path) -> dict[str, dict[str, Any]]:
                 size = int(request["settings"]["imgsz"])
                 variant = request.get("variant", {"name": "original", "operator": "original"})
                 models[f"{source}/{folder.name}"] = {
-                    "label": f"{folder.name} — {'Drive' if source == 'drive' else 'local'}",
+                    "label": f"{folder.name} — {'modelo salvo' if source == 'drive' else 'local'}",
                     "weights": weights,
                     "imgsz": size,
                     "variant": variant,
@@ -56,6 +56,8 @@ def discover(storage: Path) -> dict[str, dict[str, Any]]:
 def comparison_models(storage: Path, models: dict[str, dict[str, Any]]) -> list[dict]:
     """Select one unfiltered and one genuinely filtered model from available checkpoints."""
     ranking_path = storage / "runs/final_test_all/ranking.json"
+    if not ranking_path.is_file():
+        ranking_path = storage / "models/ranking.json"
     scores = None
     if ranking_path.is_file():
         ranking = json.loads(ranking_path.read_text(encoding="utf-8"))

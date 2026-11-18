@@ -1,0 +1,10 @@
+[
+  {
+    "experiment": "exp_05",
+    "test_mAP50_95": 0.7675819147319458
+  },
+  {
+    "experiment": "preproc__bilateral_5",
+    "test_mAP50_95": 0.6570315451267695
+  }
+]
