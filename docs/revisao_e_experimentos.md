@@ -1,5 +1,9 @@
 # Validação, revisão de anotações e YOLOv8
 
+> Registro histórico de preparação. As menções abaixo a treinamentos ainda não
+> executados e à ausência de retomada descrevem etapas anteriores. Para o estado
+> atual, consulte a [avaliação final](avaliacao_final.md).
+
 ## Divisão anterior à aplicação da revisão manual
 
 A versão atual, após os 83 descartes autorizados no CSV, tem 1.539 imagens de

@@ -7,6 +7,9 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import cv2
+import numpy as np
+
 from src.detection import evaluate_grid as evaluator
 
 
@@ -17,10 +20,25 @@ class EvaluationTests(unittest.TestCase):
             data, grid, output = root / "data", root / "grid", root / "evaluation"
             (data / "test/images").mkdir(parents=True)
             (data / "test/labels").mkdir()
-            (data / "test/images/example.jpg").write_bytes(b"mock image")
+            image = np.zeros((32, 48, 3), dtype=np.uint8)
+            image[:, 24:] = (20, 80, 200)
+            cv2.imwrite(str(data / "test/images/example.jpg"), image)
             (data / "test/labels/example.txt").write_text("0 0.5 0.5 0.2 0.2")
             manifest = data / "manifest.json"
             entries = [{"group": "one", "split": "test", "image": "test/images/example.jpg"}]
+            for number, split in enumerate(("train", "val")):
+                (data / split / "images").mkdir(parents=True)
+                (data / split / "labels").mkdir()
+                (data / split / "images/example.jpg").write_bytes(b"not read as image")
+                (data / split / "labels/example.txt").write_text("0 0.5 0.5 0.2 0.2")
+                entries.append(
+                    {
+                        "id": number,
+                        "group": split,
+                        "split": split,
+                        "image": f"{split}/images/example.jpg",
+                    }
+                )
             manifest.write_text(json.dumps(entries))
             metrics = {
                 "metrics/mAP50-95(B)": 0.6,
@@ -41,31 +59,73 @@ class EvaluationTests(unittest.TestCase):
                 (folder / "result.json").write_text(json.dumps(result))
             (grid / "exp_07/result.json").unlink()
             (grid / "exp_08/weights/best.pt").unlink()
+            # Compact Drive export, rather than a full experiment folder.
+            (grid / "exp_05/weights/best.pt").rename(grid / "exp_05/best.pt")
+            preproc = root / "preprocessing"
+            folder = preproc / "grayscale"
+            (folder / "weights").mkdir(parents=True)
+            (folder / "weights/best.pt").write_bytes(b"preprocessed checkpoint")
+            request = {
+                "settings": {"imgsz": 640, "lr0": 0.001, "mosaic": 0, "batch": 2},
+                "variant": {"name": "grayscale", "operator": "grayscale"},
+                "ultralytics": "test",
+                "opencv": cv2.__version__,
+                "numpy": np.__version__,
+                "train_val_sha256": evaluator.image_variants.dataset_identity(data)[1],
+                "preprocessing_sha256": evaluator.digest(Path(evaluator.image_variants.__file__)),
+            }
+            (folder / "result.json").write_text(
+                json.dumps({"request": request, "metrics": metrics})
+            )
+            (preproc / "pending").mkdir()
             calls = []
 
             def validate(**kwargs):
                 calls.append(kwargs)
                 self.assertTrue((output / "evaluation_plan.json").is_file())
-                return SimpleNamespace(results_dict=metrics, speed={"inference": 1.0})
+                values = dict(metrics)
+                if "preproc__" in kwargs["project"]:
+                    yaml = Path(kwargs["data"]).read_text()
+                    generated = Path(json.loads(yaml.splitlines()[0].removeprefix("path: ")))
+                    exported = generated / "test/images/example.png"
+                    expected = evaluator.image_variants.transform(
+                        evaluator.image_variants.read_image(data / "test/images/example.jpg"),
+                        request["variant"],
+                    )
+                    np.testing.assert_array_equal(cv2.imread(str(exported)), expected)
+                    self.assertEqual(
+                        (generated / "test/labels/example.txt").read_bytes(),
+                        (data / "test/labels/example.txt").read_bytes(),
+                    )
+                    self.assertFalse((generated / "train").exists())
+                    values["metrics/mAP50-95(B)"] = 0.8
+                return SimpleNamespace(results_dict=values, speed={"inference": 1.0})
 
             ultra = SimpleNamespace(
                 __version__="test", YOLO=lambda _: SimpleNamespace(val=validate)
             )
             torch = SimpleNamespace(__version__="test")
             argv = ["evaluate", "--data", str(data), "--grid", str(grid), "--output", str(output)]
+            argv += ["--preprocessing-grid", str(preproc)]
             with (
                 patch("sys.argv", argv),
                 patch.object(evaluator.importlib, "import_module", side_effect=[ultra, torch] * 2),
             ):
                 evaluator.main()
                 evaluator.main()
-            self.assertEqual(len(calls), 6)
+            self.assertEqual(len(calls), 7)
             self.assertTrue(all(call["split"] == "test" for call in calls))
             plan = json.loads((output / "evaluation_plan.json").read_text())
             self.assertEqual(plan["selected_by_validation"], "exp_03")
-            self.assertEqual(len(json.loads((output / "comparison.json").read_text())), 6)
-            self.assertEqual(set(plan["skipped_experiments"]), {"exp_07", "exp_08"})
-            for checkpoint in grid.glob("*/weights/best.pt"):
+            self.assertEqual(len(json.loads((output / "comparison.json").read_text())), 7)
+            self.assertEqual(
+                set(plan["skipped_experiments"]), {"exp_07", "exp_08", "preproc__pending"}
+            )
+            ranking = json.loads((output / "ranking.json").read_text())
+            self.assertEqual(ranking[0]["experiment"], "preproc__grayscale")
+            self.assertFalse(ranking[0]["selected_by_validation"])
+            self.assertFalse((output / "generated_test/preproc__grayscale").exists())
+            for checkpoint in root.rglob("best.pt"):
                 checkpoint.unlink()
             with patch("sys.argv", argv), self.assertRaisesRegex(RuntimeError, "No completed"):
                 evaluator.main()

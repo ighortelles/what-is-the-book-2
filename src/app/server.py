@@ -14,6 +14,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageOps, UnidentifiedImageError
 
+from src.paths import storage_root
 from src.preprocess.image_variants import transform
 
 ASSETS = Path(__file__).parent
@@ -25,6 +26,7 @@ def discover(storage: Path) -> dict[str, dict[str, Any]]:
     models = {}
     sources = [
         ("drive", storage / "models", False),
+        ("grid", storage / "runs/grid", True),
         ("local", storage / "runs/preprocessing_local/grid", True),
     ]
     for source, directory, nested in sources:
@@ -43,10 +45,46 @@ def discover(storage: Path) -> dict[str, dict[str, Any]]:
                     "weights": weights,
                     "imgsz": size,
                     "variant": variant,
+                    "experiment": (f"preproc__{folder.name}" if source == "local" else folder.name),
+                    "validation_map": float(result["metrics"]["metrics/mAP50-95(B)"]),
                 }
             except (ValueError, KeyError, TypeError):
                 continue
     return models
+
+
+def comparison_models(storage: Path, models: dict[str, dict[str, Any]]) -> list[dict]:
+    """Select one unfiltered and one genuinely filtered model from available checkpoints."""
+    ranking_path = storage / "runs/final_test_all/ranking.json"
+    scores = None
+    if ranking_path.is_file():
+        ranking = json.loads(ranking_path.read_text(encoding="utf-8"))
+        scores = {row["experiment"]: float(row["test_mAP50_95"]) for row in ranking}
+    selection = []
+    for filtered, title in ((False, "Sem preprocessamento"), (True, "Com preprocessamento")):
+        candidates = []
+        for key, model in models.items():
+            if (model["variant"]["operator"] != "original") != filtered:
+                continue
+            score = (
+                scores.get(model["experiment"]) if scores is not None else model["validation_map"]
+            )
+            if score is not None:
+                candidates.append((score, key))
+        if not candidates:
+            raise ValueError(f"Nenhum modelo disponível para comparar: {title.lower()}.")
+        score, key = max(candidates, key=lambda item: (item[0], item[1]))
+        selection.append(
+            {
+                "id": key,
+                "title": title,
+                "label": models[key]["label"],
+                "score": score,
+                "basis": "teste" if scores is not None else "validação",
+                "preprocessing": models[key]["variant"]["name"],
+            }
+        )
+    return selection
 
 
 def decode_photo(payload: bytes) -> np.ndarray:
@@ -62,19 +100,18 @@ def decode_photo(payload: bytes) -> np.ndarray:
 
 class Detector:
     def __init__(self) -> None:
-        self.key: tuple | None = None
-        self.model: Any = None
+        self.models: dict[tuple, Any] = {}
 
     def predict(self, model: dict[str, Any], image: np.ndarray, confidence: float) -> dict:
         weights = model["weights"]
         key = (str(weights), weights.stat().st_mtime_ns)
-        if self.key != key:
-            self.model = None
+        if key not in self.models:
+            if len(self.models) >= 2:
+                del self.models[next(iter(self.models))]
             ultra = importlib.import_module("ultralytics")
-            self.model = ultra.YOLO(str(weights))
-            self.key = key
+            self.models[key] = ultra.YOLO(str(weights))
         processed = transform(image, model["variant"])
-        result = self.model.predict(
+        result = self.models[key].predict(
             source=processed,
             imgsz=model["imgsz"],
             conf=confidence,
@@ -150,12 +187,19 @@ def handler(storage: Path, detector: Detector) -> type[BaseHTTPRequestHandler]:
                         "preferred": preferred,
                     },
                 )
+            elif path == "/api/comparison":
+                try:
+                    self.json_reply(
+                        200, {"selection": comparison_models(storage, discover(storage))}
+                    )
+                except (ValueError, KeyError) as exc:
+                    self.json_reply(400, {"error": str(exc)})
             else:
                 self.json_reply(404, {"error": "Página não encontrada."})
 
         def do_POST(self) -> None:
             request = urlparse(self.path)
-            if request.path != "/api/detect":
+            if request.path not in {"/api/detect", "/api/compare"}:
                 self.json_reply(404, {"error": "Página não encontrada."})
                 return
             origin = self.headers.get("Origin")
@@ -172,6 +216,18 @@ def handler(storage: Path, detector: Detector) -> type[BaseHTTPRequestHandler]:
                 if not 0.01 <= confidence <= 0.95:
                     raise ValueError("Confiança inválida.")
                 models = discover(storage)
+                if request.path == "/api/compare":
+                    selection = comparison_models(storage, models)
+                    image = decode_photo(self.rfile.read(size))
+                    results = [
+                        {
+                            **detector.predict(models[item["id"]], image, confidence),
+                            "selection": item,
+                        }
+                        for item in selection
+                    ]
+                    self.json_reply(200, {"results": results})
+                    return
                 if model_id not in models:
                     raise ValueError("Modelo indisponível. Atualize a lista de modelos.")
                 image = decode_photo(self.rfile.read(size))
@@ -189,10 +245,10 @@ def handler(storage: Path, detector: Detector) -> type[BaseHTTPRequestHandler]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--storage", type=Path, default=Path("D:/what-is-the-book-2"))
+    parser.add_argument("--storage", type=Path)
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
-    server = HTTPServer(("127.0.0.1", args.port), handler(args.storage, Detector()))
+    server = HTTPServer(("127.0.0.1", args.port), handler(storage_root(args.storage), Detector()))
     print(f"Aplicação: http://127.0.0.1:{args.port} — inferência em CPU", flush=True)
     try:
         server.serve_forever()

@@ -222,3 +222,13 @@ __marimo__/
 data/
 runs/
 *.pt
+settings.local.json
+models/
+preprocessed/
+evaluation_test_cache/
+uv-cache/
+training_status.json
+training.lock
+evaluate_final_test.py
+/tmp/
+/docs/artigo/

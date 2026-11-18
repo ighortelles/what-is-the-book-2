@@ -1,67 +1,87 @@
-# Avaliação final dos experimentos sem preprocessamento
+# Avaliação final e ranking de todos os modelos
 
-O treinamento original (`train_grid.py` e `yolov8_colab.ipynb`) calcula métricas
-somente em `val`. Seus arquivos `result.json` e `ranking.json` não são resultados
-de teste. Não foi possível verificar eventuais avaliações avulsas no Drive.
+`notebooks/yolov8_final_test_colab.ipynb` avalia a grade original e as variantes
+com preprocessamento. Os treinamentos calculam apenas validação; o notebook usa
+`split='test'`, sem treinar ou modificar checkpoints.
 
-Abra `notebooks/yolov8_final_test_colab.ipynb` no Colab e execute em ordem:
+## Execução
 
-1. Envie o mesmo `colab_bundle.zip` com o dataset revisado.
-2. Instale as dependências e monte o Drive.
-3. Confira `GRID`, apontando para `MyDrive/what-is-the-book-2/runs/grid`.
-4. Execute a avaliação e visualize os relatórios.
+O padrão é `MODE='local'`, usando o ambiente instalado em
+`.venv`. Abra no VS Code/Jupyter e execute as células em
+ordem. A inferência ocorre em subprocesso desse ambiente, sem alterar CUDA.
+`DEVICE='0'` usa GPU; `DEVICE='cpu'` permite CPU. Não concorra com treinamento
+ou outra avaliação na mesma GPU.
 
-CPU é a opção padrão, permitindo executar mesmo sem cota de GPU. Caso disponha
-de GPU no Colab, use `DEVICE='0'`. Não é necessário baixar os resultados do Drive
-para o computador. O notebook incorpora o avaliador para funcionar com o ZIP já
-existente. Ele não modifica checkpoints nem inicia treinamentos.
+Caminhos locais padrão:
 
-São avaliados os experimentos que possuem `result.json` e `weights/best.pt`.
-Experimentos incompletos são pulados, com os arquivos ausentes registrados no log
-e em `skipped_experiments.json`. É necessário pelo menos um experimento concluído.
-A seleção por validação considera somente os modelos disponíveis nesta execução.
-Para incluir experimentos finalizados posteriormente, escolha uma nova pasta
-`OUTPUT`, preservando o plano e os resultados anteriores. A grade de preprocessamento local
-e sua referência `original` são experimentos separados e não entram nesta tabela.
+- `GRIDS`: `runs\grid` e `models`.
+- `PREPROCESSING_GRID`: `runs\preprocessing_local\grid`.
+- `OUTPUT`: `runs\final_test_all`.
+- `CACHE`: `evaluation_test_cache`.
 
-O avaliador confere o hash do manifesto usado no treinamento, a separação dos
-grupos entre partições e a correspondência dos arquivos de teste com o manifesto.
-Também registra hashes dos pixels codificados e anotações de teste, dos checkpoints
-e do próprio avaliador, além das versões e parâmetros. O hash novo do teste
-documenta os arquivos avaliados; o treinamento antigo registrava apenas o manifesto,
-portanto esse registro não prova que os bytes das imagens nunca foram alterados.
+Nesta atualização estão disponíveis localmente as 11 variantes e o exp_05
+importado. Outros originais só entram quando seus arquivos estiverem acessíveis
+nos caminhos configurados. O notebook exibe a cobertura e não baixa modelos.
+Aceita `exp_XX/result.json` mais `exp_XX/weights/best.pt` ou `exp_XX/best.pt`.
+Várias pastas `GRIDS` são deduplicadas pelo identificador; checkpoints conflitantes
+geram erro. Variantes usam `<variante>/result.json` e `<variante>/weights/best.pt`.
+Modelos incompletos são pulados; precisa haver ao menos um concluído. Não use smoke.
 
-A escolha do modelo principal usa exclusivamente o mAP50–95 de validação e é
-salva antes de executar inferência no teste. A comparação dos oito modelos no
-teste é descritiva: não use esses resultados para selecionar hiperparâmetros ou
-ajustar limiares. O conjunto revisado contém 489 imagens de teste; a contagem
-efetiva é conferida no manifesto e exibida pelo notebook.
+No Colab, escolha `MODE='colab'`, disponibilize ambas as grades no Drive e confira
+os caminhos. A preparação monta o Drive, solicita o ZIP caso falte o dataset e
+instala o lockfile. Sem GPU, use CPU. O notebook contém uma cópia do avaliador,
+mas exige também `src/preprocess/image_variants.py` no projeto extraído.
+O Colab não acessa os arquivos locais do computador.
 
-Cada modelo usa a resolução de seu treinamento. Batch 1, precisão FP32, sem
-aumento de teste; `conf=0.001`, IoU de NMS `0.7`, `max_det=1000`.
-Não há filtros ou operadores de borda, apenas o processamento padrão do YOLO.
-Precisão e recall são os valores retornados pelo validador, não métricas de um
-limiar de confiança escolhido para implantação. Latências são registradas por
-imagem e dependem do dispositivo; não são medidas de tempo total de aplicação.
+## Integridade e preprocessamento
 
-Os arquivos ficam em `runs/final_test_original` no Drive:
+O avaliador verifica grupos separados entre partições, arquivos de teste e
+identidade do dataset de treinamento. Para a grade original, verifica o hash do
+manifesto; para variantes, os hashes dos arquivos de treino/validação e do código
+de preprocessamento, além das versões OpenCV/NumPy. Exige a mesma versão
+Ultralytics do treinamento. O teste revisado tem 489 imagens.
 
-- `evaluation_plan.json`: seleção por validação, parâmetros, hashes e experimentos pulados.
-- `skipped_experiments.json`: experimentos incompletos e seus arquivos ausentes.
-- `comparison.csv` e `comparison.json`: métricas de validação e teste por experimento.
-- `exp_XX/test_metrics.json`: precisão, recall, mAP50, mAP50–95 e tempos.
-- `exp_XX/plots`: curvas, matriz de confusão e exemplos do validador.
-- `evaluation_*.log`: logs completos sem sobrecarregar a saída do notebook.
+Cada variante usa as mesmas funções `prepare_variant`, `read_image` e `transform`
+do treinamento. Gera somente PNGs de teste, preservando geometria e bytes das
+anotações. Inclusive `preproc__original` passa pela exportação PNG de seu treino.
+O YAML temporário aponta os campos exigidos para `test/images`; somente
+`model.val(split='test')` é chamado. Não modifica os arquivos fonte e remove o
+cache de cada variante após salvar suas métricas. Cache incompleto é refeito.
 
-Ao repetir a execução com a mesma configuração, resultados completos são
-reutilizados. Um modelo interrompido é reavaliado. Mudanças na configuração exigem
-uma nova pasta de saída. Não execute duas avaliações simultâneas na mesma pasta.
+Usa a resolução de treinamento de cada modelo, batch 1 por padrão, FP32, sem
+aumentos, `conf=0.001`, IoU de NMS `0.7` e `max_det=1000`. Precisão e recall são
+os retornados pelo validador; o limiar baixo serve para curvas AP, não recomenda
+um limiar de implantação. Tempos do validador não incluem geração offline de filtros.
 
-O programa também está em `src/detection/evaluate_grid.py`, com opções
-`--data`, `--grid`, `--output`, `--device` e `--batch`.
-Os testes automatizados usam modelos simulados para verificar a escolha pela
-validação, o uso exclusivo de `split='test'`, a reutilização dos resultados e
-o salto de experimentos incompletos, a rejeição de uma grade sem modelos concluídos
-e a rejeição de grupos compartilhados entre partições.
-Não foi executada avaliação real nesta alteração; os checkpoints originais
-permanecem no Drive, e o treinamento local continua independente.
+## Ranking
+
+Antes da inferência, seleciona pelo mAP50–95 de validação entre os disponíveis e
+registra em `evaluation_plan.json`. Depois ordena o ranking de teste por mAP50–95
+decrescente, com desempate pelo identificador. A escolha por validação permanece
+indicada separadamente. O ranking é descritivo; não reutilize o teste para ajustar
+hiperparâmetros. As grades têm batches e aumentos diferentes: para isolar o efeito
+dos filtros, compare as variantes locais com `preproc__original`.
+
+Arquivos em `OUTPUT`:
+
+- `evaluation_plan.json`: seleção, parâmetros, versões e hashes.
+- `skipped_experiments.json`: modelos incompletos ou indisponíveis.
+- `comparison.csv/json`: resultados por modelo, família, filtro e configurações.
+- `ranking.csv/json`: classificação final por mAP50–95 de teste, com coluna `rank`.
+- `<modelo>/test_metrics.json`: métricas e tempos.
+- `<modelo>/plots`: curvas, matriz de confusão e exemplos.
+- `evaluation_*.log`: log completo do subprocesso.
+
+Reexecuções idênticas reutilizam avaliações concluídas. Mudanças nos modelos,
+dados, código ou configuração exigem nova pasta `OUTPUT`, preservando avaliações
+anteriores. O ranking final só é publicado quando todos os modelos disponíveis
+terminam; a comparação é salva progressivamente.
+
+Testes automatizados verificam seleção por validação, `split='test'`, filtro real
+em imagem sintética, preservação das anotações, limpeza do cache, exportações
+compactas do Drive, ranking e reutilização. A atualização do notebook não executa
+por si só a avaliação real dos checkpoints.
+
+Os caminhos locais são relativos ao armazenamento configurado, cujo padrão é
+a raiz do repositório. Consulte [configuração de caminhos](caminhos.md)
+para usar outro disco sem alterar o código.

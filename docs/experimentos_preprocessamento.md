@@ -1,5 +1,9 @@
 # YOLOv8: comparação de filtros e operadores de borda
 
+> Esta página descreve o perfil Colab planejado (batch 8). A execução local final
+> utilizou batch 2 e AMP desativado. Consulte as instruções de
+> [treinamento local](treinamento_local.md) e [avaliação final](avaliacao_final.md).
+
 Notebook: `notebooks/yolov8_preprocessing_colab.ipynb`.
 Configuração: `configs/yolov8_preprocessing.json`.
 Preparação: `src/preprocess/image_variants.py`.

@@ -1,8 +1,10 @@
 param(
-    [string]$Storage = 'D:\what-is-the-book-2',
+    [string]$Storage = '',
     [int]$WaitForInstallProcess = 0
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'scripts\storage.ps1')
+$Storage = Get-BookStorage $Storage
 New-Item -ItemType Directory -Force -Path $Storage | Out-Null
 $statusPath = Join-Path $Storage 'training_status.json'
 $lock = [System.IO.File]::Open((Join-Path $Storage 'training.lock'), 'OpenOrCreate', 'ReadWrite', 'None')

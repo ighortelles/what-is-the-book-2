@@ -5,6 +5,7 @@ description = "Detecção de lombadas de livros com redes neurais"
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
+    "ipykernel>=7.4.0",
     "numpy>=2.0",
     "opencv-python>=4.10,<5",
     "Pillow>=11",

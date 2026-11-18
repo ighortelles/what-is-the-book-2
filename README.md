@@ -1,5 +1,7 @@
 # what-is-the-book-2
 
+Caminhos locais e armazenamento externo: [configuração portátil](docs/caminhos.md).
+
 Aplicação para detectar livros em fotos: [como executar](docs/aplicacao.md).
 
 Treinamento na GPU local: [instruções e perfil GTX 1060](docs/treinamento_local.md).

@@ -1,9 +1,11 @@
 param(
     [switch]$Setup,
     [switch]$Smoke,
-    [string]$Storage = 'D:\what-is-the-book-2'
+    [string]$Storage = ''
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'scripts\storage.ps1')
+$Storage = Get-BookStorage $Storage
 Set-Location $PSScriptRoot
 $env:UV_PROJECT_ENVIRONMENT = Join-Path $Storage '.venv'
 $env:UV_CACHE_DIR = Join-Path $Storage 'uv-cache'

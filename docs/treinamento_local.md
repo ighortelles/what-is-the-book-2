@@ -7,7 +7,7 @@ Execute na raiz do repositório, com PowerShell:
 .\train_local.ps1
 ```
 
-O primeiro comando instala o ambiente no disco D: e verifica um cálculo e seu
+O primeiro comando instala o ambiente no armazenamento configurado e verifica um cálculo e seu
 gradiente na GPU antes de executar uma época curta. Requer internet para baixar
 dependências e os pesos iniciais YOLOv8n. Não baixa resultados antigos do Drive.
 Os dados originais continuam em `data/unified` no repositório.
@@ -23,10 +23,10 @@ variante original é o controle. A mudança de batch impede atribuir diferenças
 em relação ao Colab exclusivamente aos filtros. As definições do Colab não foram
 alteradas. O conjunto de teste permanece reservado, sem uso nesta grade.
 
-Ambiente e cache de pacotes: `D:\what-is-the-book-2\.venv` e `uv-cache`.
-Imagens temporárias: `D:\what-is-the-book-2\preprocessed`, removidas ao concluir
+Ambiente e cache de pacotes: `.venv` e `uv-cache`.
+Imagens temporárias: `preprocessed`, removidas ao concluir
 cada variante. Resultados, checkpoints e ranking:
-`D:\what-is-the-book-2\runs\preprocessing_local\grid`.
+`runs\preprocessing_local\grid`.
 O smoke test usa uma pasta separada `smoke`.
 
 PyTorch 2.7.1 e torchvision 0.22.1 usam wheels CUDA 12.6 explicitamente instalados
@@ -43,13 +43,17 @@ filas simultâneas e registra a etapa em `training_status.json` no armazenamento
 O parâmetro interno `-WaitForInstallProcess` permite aguardar a instalação inicial.
 
 Na execução iniciada em segundo plano, os logs ficam em
-`D:\what-is-the-book-2\training.log` e `training_errors.log`. Para acompanhar:
+`training.log` e `training_errors.log`. Para acompanhar:
 
 ```powershell
-Get-Content D:\what-is-the-book-2\training_status.json
-Get-Content D:\what-is-the-book-2\training.log -Tail 25 -Wait
+Get-Content training_status.json
+Get-Content training.log -Tail 25 -Wait
 ```
 
 Interromper apenas esse comando de leitura com Ctrl+C não interrompe o treinamento.
 Mantenha o computador ligado e sem suspensão durante a execução. Não é necessário
 manter um notebook ou navegador aberto.
+
+Os caminhos locais são relativos ao armazenamento configurado, cujo padrão é
+a raiz do repositório. Consulte [configuração de caminhos](caminhos.md)
+para usar outro disco sem alterar o código.
